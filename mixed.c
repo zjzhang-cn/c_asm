@@ -11,7 +11,7 @@
 		: "r"(_syscall_num), "r"(_exit_code) \
 		: "rax", "rdi");
 
-void print_hello_world();
+long print_hello_world();
 
 int main(int argc, char **argv);
 void _start()
@@ -25,11 +25,11 @@ int main(int argc, char **argv)
 {
 	print_hello_world();
 	print_hello_world();
-	print_hello_world();
-	return 1;
+	return (int)print_hello_world();
+	 
 }
 
-void print_hello_world()
+long print_hello_world()
 {
 	const char *message = "Hello World\n";
 	long syscall_num = 1; // SYS_write
@@ -49,6 +49,7 @@ void print_hello_world()
 		: "=r"(result)
 		: "r"(syscall_num), "r"(fd), "r"(message), "r"(count)
 		: "rax", "rdi", "rsi", "rdx", "memory");
+	return result;
 }
 
 // 直接调用系统调用
