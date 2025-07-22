@@ -1,6 +1,6 @@
 gcc -nostdlib -o pure_asm pure_asm.c
 
-gcc -nostdlib -o mixed mixed.c
+gcc -nostdlib -fno-stack-protector -no-pie -o mixed mixed.c
 
 gcc -o pure_c pure_c.c
 
