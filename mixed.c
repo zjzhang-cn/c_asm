@@ -11,31 +11,36 @@
 		: "r"(_syscall_num), "r"(_exit_code) \
 		: "rax", "rdi");
 
-long print_hello_world();
+long print(const char *message, long length);
 
 int main(int argc, char **argv);
-void _start()
+__attribute__((naked)) void _start()
 {
-	long result = 0;
-	print_hello_world();
-	result = main(0, 0);
-	_EXIT(result);
+	__asm__ volatile(
+		"mov (%rsp), %rdi\n"		// argc -> rdi
+		"lea 8(%rsp), %rsi\n"		// argv -> rsi
+		"lea (%rsi,%rdi,8), %rdx\n" // envp -> rdx
+		"add $8, %rdx\n"			// 跳过NULL
+		"call main\n"
+		"mov %rax, %rdi\n"
+		"mov $60, %rax\n"
+		"syscall\n");
 }
 int main(int argc, char **argv)
 {
 	int ret = 0;
-	print_hello_world();
-	print_hello_world();
-	ret=(int)print_hello_world();
+	for (int i = 0; i < argc; ++i)
+	{
+		print("Hello World\n", 12);
+	}
+	ret = (int)print("Hello World\n", 12);
 	return ret;
 }
 
-long print_hello_world()
+long print(const char *message, long length)
 {
-	const char *message = "Hello World\n";
 	long syscall_num = 1; // SYS_write
 	long fd = 1;		  // stdout
-	long count = 12;	  // 字符串长度
 	long result;
 
 	// x86_64 系统调用约定：
@@ -44,13 +49,12 @@ long print_hello_world()
 		"movq %1, %%rax\n\t" // 系统调用号放入rax
 		"movq %2, %%rdi\n\t" // fd放入rdi
 		"movq %3, %%rsi\n\t" // message放入rsi
-		"movq %4, %%rdx\n\t" // count放入rdx
+		"movq %4, %%rdx\n\t" // length放入rdx
 		"syscall\n\t"		 // 执行系统调用
 		"movq %%rax, %0\n\t" // 返回值放入result
 		: "=r"(result)
-		: "r"(syscall_num), "r"(fd), "r"(message), "r"(count)
+		: "r"(syscall_num), "r"(fd), "r"(message), "r"(length)
 		: "rax", "rdi", "rsi", "rdx", "memory");
 	return result;
 }
-
 // 直接调用系统调用
