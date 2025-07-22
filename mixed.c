@@ -23,10 +23,11 @@ void _start()
 }
 int main(int argc, char **argv)
 {
+	int ret = 0;
 	print_hello_world();
 	print_hello_world();
-	return (int)print_hello_world();
-	 
+	ret=(int)print_hello_world();
+	return ret;
 }
 
 long print_hello_world()
