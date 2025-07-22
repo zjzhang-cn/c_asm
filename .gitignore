@@ -1,3 +1,4 @@
 mixed
 build.sh
 pure_c
+compare_avx2
