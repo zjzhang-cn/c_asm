@@ -1,5 +1,6 @@
 #include <sys/syscall.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 // 使用syscall打印Hello World的函数
 void print_hello_world() {
@@ -12,6 +13,8 @@ void print_hello_world() {
 // 直接调用系统调用
 int main(int argc, char **argv)
 {
+	struct timeval tv;
+    gettimeofday(&tv, 0);
     print_hello_world();
     return 0;
 }
