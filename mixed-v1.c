@@ -1,6 +1,15 @@
 #include <sys/time.h>
-#include <stdarg.h>
-
+#include <stdarg.h> // va_list, va_start, va_arg, va_end
+#define _EXIT(exit_code)                     \
+	long _syscall_num = 60;                  \
+	long _exit_code = (long)(exit_code);     \
+	asm volatile(                            \
+		"movq %0, %%rax\n\t"                 \
+		"movq %1, %%rdi\n\t"                 \
+		"syscall\n\t"                        \
+		:                                    \
+		: "r"(_syscall_num), "r"(_exit_code) \
+		: "rax", "rdi");
 // 系统调用写入 stdout
 long sys_write(int fd, const void *buf, unsigned long count)
 {
